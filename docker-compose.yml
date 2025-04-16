@@ -1,0 +1,5 @@
+services:
+  cpp-app:
+    build: .
+    environment:
+      APP_ENV: "Hi! It is docker-compose lab 3"
