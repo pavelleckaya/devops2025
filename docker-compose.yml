@@ -1,0 +1,22 @@
+services:
+  start_docker:
+    build:
+      context: .
+      dockerfile: start.Dockerfile
+    image: start_docker
+    environment:
+      APP_ENV: "Hi! It is docker-compose lab 4"
+    depends_on:
+      - build_docker
+  build_docker:
+    build:
+      context: .
+      dockerfile: build.Dockerfile
+    image: build_docker
+    depends_on:
+      - system_docker
+  system_docker:
+    build:
+      context: .
+      dockerfile: system.Dockerfile
+    image: system_docker
