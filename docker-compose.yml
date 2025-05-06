@@ -1,0 +1,48 @@
+services:
+  db:
+    image: mysql:8
+    environment:
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PORT: ${MYSQL_PORT}
+      DB_USER: ${MYSQL_USER}
+      DB_PASS: ${MYSQL_PASSWORD}
+      DB_R_PASS: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  backend:
+    platform: linux/amd64
+    build: ./spring-backend
+    environment:
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_PORT: ${MYSQL_PORT}
+      DB_USER: ${MYSQL_USER}
+      DB_PASS: ${MYSQL_PASSWORD}
+      DB_R_PASS: ${MYSQL_ROOT_PASSWORD}
+      DB_HOST: db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./react-frontend
+
+  nginx-proxy:
+    build: ./nginx
+    volumes:
+      - ng-proxy:/var/lib/nginx/html
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/conf.d
+
+    ports:
+      - "3000:80"
+
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  dbdata:
+  ng-proxy:
